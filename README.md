@@ -3,8 +3,8 @@
 # Create-kintone-plugin
 
 npm install -g @kintone/create-plugin
-==>
- create-kintone-plugin ${plugin name}
+
+create-kintone-plugin ${plugin name}
 
 # In this article, a template is created with the directory name "HelloKintone".
 
