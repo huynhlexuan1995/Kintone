@@ -5,6 +5,7 @@
   "desktop": {
     "js": [
       "https://js.cybozu.com/jquery/3.3.1/jquery.min.js",
+      "https://js.kintone.com/momentjs/2.24.0/moment.min.js",
       "js/desktop.js"
     ],
     "css": [
