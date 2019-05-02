@@ -46,10 +46,6 @@ jQuery.noConflict();
   var showed = false;
 
   kintone.events.on("app.record.index.show", function(event) {
-
-    var $timekeeping = $('.timekeeping').append($('.contents-gaia app-index-contents-gaia'));
-    $timekeeping.append('<table class="recordlist-gaia"><thead><th class ="recordlist-header-cell-gaia label-5520071 recordlist-header-sortable-gaia"><div class ="recordlist-header-cell-inner-gaia"><span class ="recordlist-header-label-gaia">Date</span></div></th></thead></table>');
-    
     var selectUser = $("<select></select>").addClass("kintoneplugin-select");
     var selectMonth = $("<select></select>").addClass("kintoneplugin-select");
     var confirmButton = $("<button>Search</button>").addClass('kintoneplugin-button-dialog-ok');
