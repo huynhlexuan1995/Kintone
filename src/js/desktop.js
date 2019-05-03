@@ -1,5 +1,5 @@
 jQuery.noConflict();
-( function ($, PLUGIN_ID) {
+( function (PLUGIN_ID) {
   "use strict" ;
   const appId = kintone.app.getId();
   kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {app:appId}, function(resp) {
@@ -30,15 +30,11 @@ jQuery.noConflict();
   });
 
   var userValue = ["All"];
-  var monthValue = ["All"];
 
   kintone.api(kintone.api.url("/k/v1/records", true), "GET", {app: appId}, function(response) {
       response.records.forEach(function(record) {
         userValue.indexOf(record['name'].value) === -1 ?
           userValue.push(record['name'].value) :
-          null;
-        monthValue.indexOf(record['date'].value) === -1 ?
-          monthValue.push(record['date'].value) :
           null;
       });
   });
@@ -47,28 +43,26 @@ jQuery.noConflict();
 
   kintone.events.on("app.record.index.show", function(event) {
     var selectUser = $("<select></select>").addClass("kintoneplugin-select");
-    var selectMonth = $("<select></select>").addClass("kintoneplugin-select");
+    var inputDatePicker = $("<input></input>").addClass('kintoneplugin-button-normal datepicker');
     var confirmButton = $("<button>Search</button>").addClass('kintoneplugin-button-dialog-ok');
 
     userValue.forEach(function(name) {
       selectUser.append($("<option></option>").attr("value", name).text(name));
     });
-    monthValue.forEach(function(date) {
-      selectMonth.append($("<option></option>").attr("value", date).text(date));
-    });
 
     if (showed === false) {
-      $(kintone.app.getHeaderMenuSpaceElement()).append([selectUser, selectMonth, confirmButton]);
+      $(kintone.app.getHeaderMenuSpaceElement()).append([selectUser, inputDatePicker, confirmButton]);
       showed = true;
     }
+    $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' }).val();
 
     confirmButton.click(function() {
       const selectedUser = selectUser[0].value;
-      const selectedMonth = selectMonth[0].value;
-      if (selectedUser !== "All" && selectedMonth !== "All") {
-        const encodedQuery = encodeURI(`name = "${selectedUser}" and date = "${selectedMonth}"`);
+      const selectedMonth = inputDatePicker[0].value;
+      if (selectedUser !== "All" && selectedMonth !== null) {
+        const encodedQuery = encodeURI(`name = "${selectedUser}"`);
         window.location.href = `https://fabbier.kintone.com/k/${appId}/?query=${encodedQuery}`;
-      } else if (selectedUser === "All" && selectedMonth === "All") {
+      } else if (selectedUser === "All" && selectedMonth === "") {
         window.location.href = `https://fabbier.kintone.com/k/${appId}`;
       } else {
         const encodedQuery = selectedMonth === "All" ? encodeURI(`name = "${selectedUser}"`) : encodeURI(`date = "${selectedMonth}"`);
