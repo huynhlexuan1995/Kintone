@@ -23,6 +23,7 @@ jQuery.noConflict();
                   }
                 };
                 kintone.api(kintone.api.url("/k/v1/record", true), "POST", body);
+                window.location = window.location;
               }
             });
           }
@@ -59,13 +60,13 @@ jQuery.noConflict();
     confirmButton.click(function() {
       const selectedUser = selectUser[0].value;
       const selectedMonth = inputDatePicker[0].value;
-      if (selectedUser !== "All" && selectedMonth !== null) {
-        const encodedQuery = encodeURI(`name = "${selectedUser}"`);
+      if (selectedUser !== "All" && selectedMonth !== '') {
+        const encodedQuery = encodeURI(`name = "${selectedUser}" and date = "${selectedMonth}"`);
         window.location.href = `https://fabbier.kintone.com/k/${appId}/?query=${encodedQuery}`;
-      } else if (selectedUser === "All" && selectedMonth === "") {
+      } else if (selectedUser === "All" && selectedMonth === '') {
         window.location.href = `https://fabbier.kintone.com/k/${appId}`;
       } else {
-        const encodedQuery = selectedMonth === "All" ? encodeURI(`name = "${selectedUser}"`) : encodeURI(`date = "${selectedMonth}"`);
+        const encodedQuery = selectedMonth === '' ? encodeURI(`name = "${selectedUser}"`) : encodeURI(`date = "${selectedMonth}"`);
         window.location.href = `https://fabbier.kintone.com/k/${appId}/?query=${encodedQuery}`;
       }
     });
