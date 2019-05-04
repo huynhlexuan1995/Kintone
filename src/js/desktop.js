@@ -2,6 +2,7 @@ jQuery.noConflict();
 ( function (PLUGIN_ID) {
   "use strict" ;
   const appId = kintone.app.getId();
+  //const arrRecode = [];
   kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {app:appId}, function(resp) {
       $.ajax({
           url: 'http://localhost:3000/',
@@ -9,8 +10,8 @@ jQuery.noConflict();
           crossDomain: true,
           success: function(res){
             res.forEach(function(el){
-                var indexInKintone = resp.records.findIndex(data => data["id"]["value"] == el["id"]);
-                if (indexInKintone == -1) {
+              var indexInKintone = resp.records.findIndex(data => data["id"]["value"] == el["id"]);
+              if (indexInKintone == -1) {
                 var body = {
                   app: appId,
                   record: {
@@ -26,6 +27,8 @@ jQuery.noConflict();
                 window.location = window.location;
               }
             });
+
+            
           }
       })
   });
@@ -45,19 +48,21 @@ jQuery.noConflict();
   kintone.events.on("app.record.index.show", function(event) {
     var selectUser = $("<select></select>").addClass("kintoneplugin-select");
     var inputDatePicker = $("<input></input>").addClass('kintoneplugin-button-normal datepicker');
-    var confirmButton = $("<button>Search</button>").addClass('kintoneplugin-button-dialog-ok');
+    var btnSearch = $("<button>Search</button>").addClass('kintoneplugin-button-dialog-ok');
 
     userValue.forEach(function(name) {
       selectUser.append($("<option></option>").attr("value", name).text(name));
     });
 
     if (showed === false) {
-      $(kintone.app.getHeaderMenuSpaceElement()).append([selectUser, inputDatePicker, confirmButton]);
+      $(kintone.app.getHeaderMenuSpaceElement()).append([selectUser, inputDatePicker, btnSearch]);
       showed = true;
     }
     $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' }).val();
-
-    confirmButton.click(function() {
+    const vl = window.location.search;
+    const str = vl.slice(vl.length-13,vl.length-3);
+    $(inputDatePicker).val(str);
+    btnSearch.click(function() {
       const selectedUser = selectUser[0].value;
       const selectedMonth = inputDatePicker[0].value;
       if (selectedUser !== "All" && selectedMonth !== '') {
