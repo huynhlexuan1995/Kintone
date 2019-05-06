@@ -2,36 +2,41 @@ jQuery.noConflict();
 ( function (PLUGIN_ID) {
   "use strict" ;
   const appId = kintone.app.getId();
-  //const arrRecode = [];
+  const arrRecode = [];
   kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {app:appId}, function(resp) {
-      $.ajax({
+      if(resp.records.length === 0){
+        window.location.reload();
+        $.ajax({
           url: 'http://localhost:3000/',
           type:'get',
           crossDomain: true,
           success: function(res){
             res.forEach(function(el){
               var indexInKintone = resp.records.findIndex(data => data["id"]["value"] == el["id"]);
-              if (indexInKintone == -1) {
-                var body = {
-                  app: appId,
-                  record: {
-                      date: { value: moment(el["date"]).format("YYYY-MM-DD") },
-                      name: { value: el["name"] },
-                      start_time: { value: el["start_time"] },
-                      end_time: { value: el["end_time"] },
-                      note:{value: el["note"]},
-                      id: { value: el["id"] }
-                  }
-                };
-                kintone.api(kintone.api.url("/k/v1/record", true), "POST", body);
-                window.location = window.location;
+              const record = {
+                date: { value: moment(el["date"]).format("YYYY-MM-DD") },
+                name: { value: el["name"] },
+                start_time: { value: el["start_time"] },
+                end_time: { value: el["end_time"] },
+                note:{value: el["note"]},
+                id: { value: el["id"] }
+              }
+              if(indexInKintone === -1){
+                arrRecode.push(record);
               }
             });
+            var body = {
+              app: appId,
+              records: arrRecode
+            };
 
-            
+            kintone.api(kintone.api.url("/k/v1/records", true), "POST", body);
           }
       })
+      }
+      
   });
+
 
   var userValue = ["All"];
 
@@ -59,9 +64,27 @@ jQuery.noConflict();
       showed = true;
     }
     $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' }).val();
-    const vl = window.location.search;
-    const str = vl.slice(vl.length-13,vl.length-3);
-    $(inputDatePicker).val(str);
+    const valu = window.location.search;
+    console.log(valu);
+    if(valu.includes("date") && !valu.includes("name")){
+      const str = valu.split('date',2);
+      console.log('str[1]',str[1]);
+      const strDate = str[1].split('%22',3);
+      console.log('strDate',strDate[1]);
+      $(inputDatePicker).val(strDate[1]);
+    }
+    else if(valu.includes("name") && !valu.includes("date")){
+      const str_user = valu.split('name',2);
+      const strUser = str_user[1].split('%22',2);
+      $(selectUser).val(strUser[1]);
+    }
+    else if (valu.includes("date") && valu.includes("name")){
+      const strAll = valu.split('%22',8);
+      console.log('adfasdfdasf',strAll);
+      $(inputDatePicker).val(strAll[3]);
+      $(selectUser).val(strAll[1]);
+    }
+
     btnSearch.click(function() {
       const selectedUser = selectUser[0].value;
       const selectedMonth = inputDatePicker[0].value;
